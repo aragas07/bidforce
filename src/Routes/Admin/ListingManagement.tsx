@@ -44,7 +44,7 @@ export class ListingManagement extends React.Component {
     if(prevProps!=this.props){
       let {admin} = this.props
       if(admin.getListingsSuccess && admin.getListingsData){
-        console.log("Setting data")
+        console.log("get datas")
         console.log(admin.getListingsData)
           this.setState({data:admin.getListingsData.data, isfetching:false})
       }
@@ -82,13 +82,15 @@ export class ListingManagement extends React.Component {
             </Card.Content>
         </Card>
         <View style={{display: 'flex', backgroundColor: '#000'}}>
-            {(Platform.OS == 'ios') &&(<>
+          
+          <ItemList itemList={this.state.data} navigation={this.props.navigation}/>
+            {/* {(Platform.OS == 'ios') &&(<>
                 <RefreshControl refreshing={this.state.isfetching} onRefresh={()=> this.getData()} ></RefreshControl>
                 <ItemList itemList={this.state.data} navigation={this.props.navigation}/>
             </>)}
             {(Platform.OS != 'ios') &&(<RefreshControl refreshing={this.state.isfetching} onRefresh={()=> this.getData()} >
                 <ItemList itemList={this.state.data} navigation={this.props.navigation}/>
-            </RefreshControl>)}
+            </RefreshControl>)} */}
         </View>
     </ScrollView>)
   }

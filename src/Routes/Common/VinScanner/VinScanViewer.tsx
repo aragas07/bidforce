@@ -14,125 +14,142 @@ export default class VinScanViewer extends Component {
         isLoading: true,
         data: null,
         mode: 'default',
-        listing: []
+        details: []
       };
     }
   
     componentDidMount() {
-      console.log("navigation vinscanviewer")
-      // console.log(this.props.route.params.data.vin_number)
-      // this.props.vinScan(this.props.route.params.data.vin_number)
+      console.log("component did mount in vin scan viewer")
+      console.log("component did mount "+this.props.route.params.data)
+      this.props.vinScan(this.props.route.params.data)
     }
   
 
     componentDidUpdate(prevProps) {
       let {listing} = this.props;
-      console.log("::Example listing::")
-      // console.log(listing)
-      // this.setState({isLoading:false})
+      console.log("componentdidupdate")
+      if(prevProps!=this.props){
+        if(listing.getVinError){
+          this.setState({isLoading:false})
+        }
+        if(listing.getVinData){
+          this.setState({details:listing.getVinData.data, isLoading:false})
+          console.log("componentdidupdate data ")
+          console.log(listing.getVinData.data)
+        }
+      }
     }
   
+
     render() {
       // let { first_name, middle_name, last_name } = this.state
       return (<ScrollView style={{padding: 13, marginBottom: 60, borderTopColor: '#f7601b', borderTopWidth: 3}}>
-        <Text>Basic Information</Text>
+        {!this.state.isLoading &&(<><Text>Basic Information</Text>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Make</Text>
           <View style={[styles.innerCard,styles.mb10]}>
-            <Text style={styles.state}>Toyota</Text>
+            <Text style={styles.state}>{this.state.details.basic.make}</Text>
           </View>
           <Text style={styles.cardTitle}>Model</Text>
           <View style={[styles.innerCard,styles.mb10]}>
-            <Text style={styles.state}>Sienna</Text>
+            <Text style={styles.state}>{this.state.details.basic.model}</Text>
           </View>
           <Text style={styles.cardTitle}>Year</Text>
           <View style={[styles.innerCard,styles.mb10]}>
-            <Text style={styles.state}>2015</Text>
+            <Text style={styles.state}>{this.state.details.basic.year}</Text>
           </View>
           <Text style={styles.cardTitle}>Trim</Text>
           <View style={[styles.innerCard,styles.mb10]}>
-
+            <Text style={styles.state}>{this.state.details.basic.trim}</Text>
           </View>
           <Text style={styles.cardTitle}>Body Type</Text>
           <View style={[styles.innerCard,styles.mb10]}>
-            <Text style={styles.state}>4 Door Passenger Van</Text>
+            <Text style={styles.state}>{this.state.details.basic.body_type}</Text>
           </View>
           <Text style={styles.cardTitle}>Vehicle Type</Text>
           <View style={[styles.innerCard,styles.mb10]}>
-            <Text style={styles.state}>Van</Text>
+            <Text style={styles.state}>{this.state.details.basic.vehicle_type}</Text>
           </View>
           <Text style={styles.cardTitle}>Vehicle Size</Text>
-          <View style={styles.innerCard}></View>
+          <View style={styles.innerCard}>
+            <Text style={styles.state}>{this.state.details.basic.vehicle_size}</Text>
+          </View>
         </View>
         <Text>Transmission</Text>
         <View style={styles.card}>
-          <Text style={styles.state}>Transmission Style</Text>
+          <Text style={styles.cardTitle}>Transmission style</Text>
+          <View style={[styles.innerCard,styles.mb10]}>
+            <Text style={styles.state}>{this.state.details.transmission.transmission_style}</Text>
+          </View>
         </View>
-        <Text>Restrain</Text>
+        <Text>Restraint</Text>
         <View style={styles.card}>
-          <Text style={styles.state}>Dual Air Bag;</Text>
+          <Text style={styles.cardTitle}>Others</Text>
+          <View style={styles.innerCard}>
+            <Text style={styles.state}>{this.state.details.restraint.others}</Text>
+          </View>
         </View>
         <Text>Dimensions</Text>
         <View style={styles.card}>
-          <Text style={styles.state}>Class D:</Text>
+          <Text style={styles.cardTitle}>GVWR</Text>
+          <View style={[styles.innerCard,styles.mb10]}>
+            <Text style={styles.state}>{this.state.details.dimensions.gvwr}</Text>
+          </View>
         </View>
         <Text>Drivetrain</Text>
         <View style={styles.card}>
-          <Text style={styles.state}>Front Wheel Drive</Text>
+          <Text style={styles.cardTitle}>Drive type</Text>
+          <View style={[styles.innerCard,styles.mb10]}>
+            <Text style={styles.state}>{this.state.details.drivetrain.drive_type}</Text>
+          </View>
         </View>
         <Text>Fuel</Text>
         <View style={styles.card}>
-          <Text style={styles.state}>Gasoline</Text>
+          <Text style={styles.cardTitle}>Highway mileage</Text>
+          <View style={[styles.innerCard,styles.mb10]}>
+            <Text style={styles.state}>{this.state.details.fuel.highway_mileage}</Text>
+          </View>
         </View>
-        <Text>Engine Description</Text>
+        <Text>Engine</Text>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Engine Size</Text>
           <View style={[styles.innerCard,styles.mb10]}>
-            <Text style={styles.state}>Toyota Motor Mfg., Indiana, Inc.</Text>
+            <Text style={styles.state}>{this.state.details.engine.engine_size}</Text>
           </View>
           <Text style={styles.cardTitle}>Engine Description</Text>
           <View style={[styles.innerCard,styles.mb10]}>
-            <Text style={styles.state}>V6, 3.5L</Text>
+            <Text style={styles.state}>{this.state.details.engine.engine_description}</Text>
           </View>
           <Text style={styles.cardTitle}>Engine capacity</Text>
           <View style={styles.innerCard}>
-            <Text style={styles.state}></Text>
+            <Text style={styles.state}>{this.state.details.engine.engine_capacity}</Text>
           </View>
         </View>
         <Text>Manufacturer</Text>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Manufacturer</Text>
           <View style={[styles.innerCard,styles.mb10]}>
-            <Text style={styles.state}>Toyota Motor Mfg., Indiana Inc.</Text>
+            <Text style={styles.state}>{this.state.details.manufacturer.manufacturer}</Text>
           </View>
           <Text style={styles.cardTitle}>Region</Text>
           <View style={[styles.innerCard,styles.mb10]}>
-            <Text style={styles.state}>Prince</Text>
+            <Text style={styles.state}>{this.state.details.manufacturer.region}</Text>
           </View>
           <Text style={styles.cardTitle}>Country</Text>
           <View style={[styles.innerCard,styles.mb10]}>
-            <Text style={styles.state}>United States</Text>
+            <Text style={styles.state}>{this.state.details.manufacturer.country}</Text>
           </View>
           <Text style={styles.cardTitle}>Plant City</Text>
           <View style={styles.innerCard}>
-            <Text style={styles.state}>Princeton, IN</Text>
+            <Text style={styles.state}>{this.state.details.manufacturer.plant_country_name}</Text>
           </View>
-        </View>
-        <Text>Transmission</Text>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Transmission Style</Text>
-          <View style={styles.innerCard}>
-
-          </View>
-        </View>
-
+        </View></>)}
       </ScrollView>
       );
     }
   }
   
 const mapStateToProps = (state) => ({
-  auth: state.auth,
   listing: state.listing
 })
 

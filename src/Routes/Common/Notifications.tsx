@@ -85,6 +85,7 @@ export class Notifications extends React.Component{
         }
 
         return (
+          <TouchableOpacity onPress={() => this.processNotification(data)}>
             <Card
             key={index}
             style={[
@@ -94,37 +95,38 @@ export class Notifications extends React.Component{
                 borderColor: data.is_read ? '#FFF' : '#75d2fa',
               },
             ]}>
-            <TouchableOpacity onPress={() => this.processNotification(data)}>
-              <Card.Header
-                style={HomeStyles.notificationBody}
-                title={
-                  <View
+            <Card.Title
+              style={HomeStyles.notificationBody}
+              title={
+                <View
+                  style={{
+                    flexDirection: 'row',
+                  }}>
+                  {/* <Avatar
+                    rounded
+                    containerStyle={{height: 35}}
+                    source={returnObject}
+                  /> */}
+                  <Text
                     style={{
-                      flexDirection: 'row',
+                      textAlign: 'justify',
+                      marginRight: 30,
+                      marginLeft: 10,
+                      fontSize: 14,
+                      fontWeight: '700',
                     }}>
-                    {/* <Avatar
-                      rounded
-                      containerStyle={{height: 35}}
-                      source={returnObject}
-                    /> */}
-                    <Text
-                      style={{
-                        textAlign: 'justify',
-                        marginRight: 30,
-                        marginLeft: 10,
-                        fontSize: 14,
-                        fontWeight: '700',
-                      }}>
-                      {returnString}
-                    </Text>
-                  </View>
-                }
-              />
-            </TouchableOpacity>
+                    {returnString}
+                  </Text>
+                </View>
+              }
+            />
+            <Card.Content>
             <Text style={{alignSelf: 'flex-end', marginRight: 10}}>
               {moment(data.created_at).fromNow()}
             </Text>
+            </Card.Content>
           </Card>
+          </TouchableOpacity>
         )
     }
 

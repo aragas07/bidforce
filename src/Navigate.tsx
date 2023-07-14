@@ -17,9 +17,10 @@ import MyBids from './Routes/Customer/MyBids'
 import VinScan from './Routes/Common/VinScanner/VinScanViewer';
 import Home from './Routes/Admin/Home'
 import VinScanner from './Routes/Common/VinScanner/VinScanner'
+import QRScanner from './Routes/Common/VinScanner/QRScanner'
 import Profile from './Routes/Common/Profile';
 import Users from './Routes/Admin/Users';
-import {View, Image, Text} from 'react-native'
+import {View, Image, Text, Pressable} from 'react-native'
 import { TabBar } from 'react-native-ios-kit';
 import ListingManagement from './Routes/Admin/ListingManagement';
 import MainSettings from './Routes/Common/Settings/MainSettings';
@@ -64,13 +65,13 @@ export class Navigate extends React.Component {
         <Image source={logo} style={{resizeMode: 'stretch', height: 30, width: 30, marginTop: 10, marginLeft: 10}}/>
       </View>
         <NavigationContainer ref={this.NavigationContainerRef}>
-          <Stack.Navigator 
+          <Stack.Navigator
             initialRouteName="login">
               {auth && auth.loginData && (
                 <>
-                  <Stack.Screen 
-                    name='dashboard' 
-                    component={Dashboard} 
+                  <Stack.Screen
+                    name='dashboard'
+                    component={Dashboard}
                     options={{ title: 'Home Screen', headerShown: false }}/>
                   <Stack.Screen
                     name='Notifications'
@@ -101,6 +102,11 @@ export class Navigate extends React.Component {
                     options={{title:'VIN Query',headerTintColor:'#f7601b', headerShown:true, headerStyle: {backgroundColor: '#000'}, headerTitleStyle: {color: '#ddd'}}}
                   />
                   <Stack.Screen
+                    name='qrscanner'
+                    component={QRScanner}
+                    options={{title:'QR Scanner',headerTintColor:'#f7601b', headerLeft:()=><></>, headerShown:true, headerStyle: {backgroundColor: '#000'}, headerTitleStyle: {color: '#ddd'}}}
+                  />
+                  <Stack.Screen
                   name="mynotes"
                   component={MyNotes}
                   options={{title:'My Notes', headerShown:true, headerLeft:()=><></>, headerStyle: {backgroundColor: '#000'}, headerTitleStyle: {color: '#ddd'}}}
@@ -108,7 +114,7 @@ export class Navigate extends React.Component {
                   <Stack.Screen
                   name="addlisting"
                   component={AddListing}
-                  options={{title:'Create new Listing', headerLeft:()=><></>, headerShown:true, headerStyle: {backgroundColor: '#000'}, headerTitleStyle: {color: '#ddd'}}}
+                  options={{ title: 'Home Screen', headerShown: false }}
                   />
                   <Stack.Screen
                     name="menu"
@@ -138,7 +144,7 @@ export class Navigate extends React.Component {
                   <Stack.Screen
                     name='home'
                     component={Home}
-                    option={{title: 'Home', headerShown: false}}
+                    options={{title: 'Home', headerShown: false}}
                   />
                 </>
               )}

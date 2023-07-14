@@ -3,7 +3,7 @@ import { Text, Image, View, Pressable, Keyboard, StyleSheet, Button, TextInput, 
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { connect } from 'react-redux';
 import frame from '../../../assets/scanner_frame.png'
-export class VinScanner extends React.Component{
+export class QRScanner extends React.Component{
     constructor(props){
         super(props);
         this.state = {
@@ -27,8 +27,9 @@ export class VinScanner extends React.Component{
 
     handleBarCodeScanned({type,data}){
         this.setState({setScanned:true, vin_number:data})
+        console.log(data+" sample scanning")
         if(this.state.number == 0)
-        this.props.navigation.navigate('vinscan', {data})
+        this.props.navigation.navigate('addlisting', {data})
         this.setState({number: 1})
         // Alert.alert('Bar code with type '+type, 'Data'+data+' has been scanned!')
     }
@@ -41,24 +42,13 @@ export class VinScanner extends React.Component{
                         onBarCodeScanned={(data)=>{this.props.scanned ? undefined : this.handleBarCodeScanned(data)}}
                         style={StyleSheet.absoluteFillObject}
                     />
-                    <View style={{position: 'absolute',top:0, left:0, height: '100%',width: '100%', justifyContent: 'center'}}>
+                    <View style={{position: 'absolute', height: '100%',width: '100%', justifyContent: 'center'}}>
                         <Image source={frame} style={{height: 470, width: 470, alignSelf: 'center'}}/>
                     </View>
                     {this.props.hasPermission == false &&(
                         <Text>No access to camera</Text>
                     )}
                     {this.props.scanned && <Button title={'Tap to Scan Again'} onPress={() => this.setState({setScanned:false})} />}
-                </View>
-                <View style={{height: 190, width: '100%', backgroundColor: 'white', backgroundColor: '#eee'}}>
-                    <TextInput placeholder="Search Vin" value={this.state.vin_number} onChangeText={(v)=>{this.setState({vin_number:v})}}
-                    style={{margin: 7,
-                    padding: 5,
-                    borderBottomColor: '#ccc',
-                    borderBottomWidth: 1,
-                    fontSize: 19}}/>
-                    <Pressable onPress={(data)=>{this.props.navigation.navigate('vinscan', {data: this.state.vin_number})}} style={{padding: 10, width: '50%', borderColor: '#0f56fc', borderWidth: 1, backgroundColor: '#306dfc', alignSelf:'center', borderRadius: 7}}>
-                        <Text style={{fontSize:19, fontWeight: 700, color: 'white', textAlign: 'center'}}>Search</Text>
-                    </Pressable>
                 </View>
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>)
@@ -75,4 +65,4 @@ const mapActionCteators = {
     
 }
   
-export default connect(mapStateToProps, mapActionCteators)(VinScanner)
+export default connect(mapStateToProps, mapActionCteators)(QRScanner)

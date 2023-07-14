@@ -4,7 +4,8 @@ import axios from 'axios';
 import ToastNice from 'react-native-toast-message';
 const { v4: uuidv4, validate } = require("uuid");
 const Buffer = require("buffer").Buffer;
-const API_URL = 'http://165.22.48.133:3333';
+// const API_URL = 'http://165.22.48.133:3333';
+const API_URL = 'http://192.168.254.106:3333'
 export const LOGIN_SUCCESS = 'auth/LOGIN_SUCCESS';
 export const LOGIN_ERROR = 'auth/LOGIN_ERROR';
 export const LOGIN_FAIL = 'auth/LOGIN_FAIL';

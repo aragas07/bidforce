@@ -41,6 +41,8 @@ export class Dashboard extends React.Component {
       if(listing.getListingData){
         if(listing.getListingData.data)
         this.setState({items:listing.getListingData.data, isLoading:false})
+        console.log("::Example dashboard::")
+        console.log("sample vin result "+listing.getListingData)
       }
     }
   }
@@ -118,10 +120,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#000'
   },
   heading: {
-    fontSize:20, 
-    fontWeight:'bold', 
-    backgroundColor: '#000', 
-    padding: 10,   
+    fontSize:20,
+    fontWeight:'bold',
+    backgroundColor: '#000',
+    padding: 10,
     margin: 15,
     color: '#eee'
   },

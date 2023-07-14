@@ -6,7 +6,6 @@ import loginlogo from '../assets/bidforce.png';
 import Modal from "react-native-modal";
 import { connect } from 'react-redux';
 import { login } from './stores/modules/auth';
-const API_URL = 'http://165.22.48.133:3333';
 
 export class Login extends React.Component{
   constructor(props){

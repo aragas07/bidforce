@@ -97,7 +97,6 @@ export default class MyNotes extends React.Component{
             default: returnString = data.name
                 break
         }
-
         return(<TouchableOpacity onPress={()=>this.viewBid(data)}>
             <Card key={index}
             style={{

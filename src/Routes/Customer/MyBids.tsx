@@ -35,6 +35,7 @@ export class MyBids extends React.Component{
     
 
     componentDidUpdate(prevProps){
+      console.log("PREVPROPS")
       console.log(prevProps)
       console.log(prevProps!=this.props)
       let { admin, auth, route} = this.props
@@ -45,6 +46,7 @@ export class MyBids extends React.Component{
           console.log(admin)
           this.setState({data:admin.getBidsData, isFetching:false})
         }else{
+          console.log("else admin")
           this.setState({data:auth.getMyBidsData, isFetching:false})
         }
       }
@@ -75,7 +77,7 @@ export class MyBids extends React.Component{
 
     renderBidCard(data, index){
         let returnString = ""
-
+        console.log("my bidding list")
         console.log(data)
 
         if(!this.props.route.params){
@@ -110,7 +112,6 @@ export class MyBids extends React.Component{
     }
 
     render(){
-
         return (  <View style={{borderTopColor: '#f7601b', borderTopWidth: 3}}>
             <ScrollView >
                 {(Platform.OS == 'ios') &&(

@@ -79,6 +79,7 @@ export class Profile extends Component{
         if(GetUserData!=this.state.profile && GetUserData.firstname ){
             this.setState({profile:GetUserData, isFetching:false})
         }
+        
 
     // Update notificationData
     }

@@ -249,7 +249,7 @@ export class ViewListing extends React.Component{
                     <Pressable style={HomeStyles.primary} disabled={this.props.auth.loginData && this.props.auth.loginData.id == this.state.data.user_id} type='primary' onPress={()=> this.setState({bidDialogue:true})}>
                         <Text style={HomeStyles.vlTextwhite}>{this.props.auth.loginData.id == this.state.data.user_id ? "You can't bid here" : "Bid Now"}</Text>
                     </Pressable>
-                    <Pressable style={HomeStyles.vlbutton} type='ghost' onPress={()=> this.props.navigation.navigate('vinscan', {data: this.state.data})}>
+                    <Pressable style={HomeStyles.vlbutton} type='ghost' onPress={()=> this.props.navigation.navigate('vinscan', {data: this.state.data.vin_number})}>
                       <Text style={HomeStyles.vlText}>Query VIN</Text>
                     </Pressable>
                 </View>

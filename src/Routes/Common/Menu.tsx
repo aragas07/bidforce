@@ -152,7 +152,8 @@ export class MenuScreen extends React.Component{
                             </Pressable>
                         </>
                     )}
-                    <Pressable onPress={()=>{console.log("example vin scanner");this.props.navigation.navigate('vinscanner')}} style={[HomeStyles.row,{marginBottom:10}]}>
+                    <Pressable onPress={()=>
+                        {console.log("example vin scanner");this.props.navigation.navigate('vinscanner')}} style={[HomeStyles.row,{marginBottom:10}]}>
                         <Icon name='qrcode' style={profileStyles.icon}/>
                         <View>
                             <Text style={profileStyles.listItem}>Vin Scanner</Text>

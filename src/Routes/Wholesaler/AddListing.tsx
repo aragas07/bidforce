@@ -28,6 +28,7 @@ import StepIndicator from 'react-native-step-indicator-v2';
 import Textarea from 'react-native-textarea';
 import Modal from "react-native-modal";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import frame from '../../assets/scanner_frame.png'
 export const SLIDER_WIDTH = Dimensions.get('window').width
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH )
 var permission;
@@ -72,16 +73,23 @@ export class CreateListing extends React.Component{
         name:'',
         year_of_vehicle:'',
         trim:'',
+        data: null,
         milage:'',
         vin_number:'',
         disclaimers:'',
-
-        };
+        qrcode: false,
+        fullname: '',
+        email: '',
+        phone: '',
+        address: '',
+      };
         this.camera = React.createRef();
     }
 
     componentDidMount() {
-        this.setState({ loaded: true });
+        this.setState({ loaded: true, vin_number: this.props.route.params });
+        console.log("component did mount in vin scan viewer")
+        console.log("component did mount "+this.props.route)
         permission = Camera.requestCameraPermissionsAsync();
         // permission = Camera.useCameraPermissions();
         if (!permission) {
@@ -95,16 +103,20 @@ export class CreateListing extends React.Component{
         this.props.navigation.navigate('dashboard')
     }
 
+    sample(){
+      console.log("Example click")
+    }
+
     componentDidUpdate(prevProps) {
         if(prevProps!=this.props){
-        let {listing} = this.props
+          let {listing} = this.props
 
-        if(listing.postListingSuccess){
-            this.setState({isSubmittingData:false})
-            Alert.alert("Post Success!",
-            "Your Listing has been successfully uploaded and have yet to be reviewed by the admins. Check your notifications for updates.", 
-            [{text:"OK", onPress:()=> this.navigateToDashboard() }], ()=> this.navigateToDashboard)
-        }
+          if(listing.postListingSuccess){
+              this.setState({isSubmittingData:false})
+              Alert.alert("Post Success!",
+              "Your Listing has been successfully uploaded and have yet to be reviewed by the admins. Check your notifications for updates.", 
+              [{text:"OK", onPress:()=> this.navigateToDashboard() }], ()=> this.navigateToDashboard)
+          }
         }
     }
     capture() {
@@ -115,6 +127,21 @@ export class CreateListing extends React.Component{
         // let v = this.camera.takePictureAsync()
         // console.log(v)
     }
+
+    useEffect(){
+      const getBarCodeScannerPermissions = async () => {
+        const { status } = await BarCodeScanner.requestPermissionsAsync();
+        this.setState({setHasPermission:status==='granted'})
+      }
+      getBarCodeScannerPermissions();
+  }
+
+  handleBarCodeScanned({type,data}){
+      this.setState({setScanned:true, vin_number:data, qrcode:false})
+      console.log(data+" sample scanning")
+      // this.props.navigation.navigate('addlisting', {data})
+      // Alert.alert('Bar code with type '+type, 'Data'+data+' has been scanned!')
+  }
 
     afterchangeCallback(index) {
         console.log(index);
@@ -198,10 +225,10 @@ export class CreateListing extends React.Component{
     }
     
     submitData() {
-        let { name, description, make_of_vehicle, model, year_of_vehicle, trim, mileage, vin_number, disclaimers, accidents } = this.state
+        let { name, description, make_of_vehicle, model, year_of_vehicle, trim, mileage, vin_number, disclaimers, accidents, address } = this.state
         var data = {
-        name, description, make_of_vehicle, model, year_of_vehicle, trim, mileage, vin_number, disclaimers, accidents,
-        images: []
+        name, description, make_of_vehicle, model, year_of_vehicle, trim, mileage, vin_number, disclaimers,
+        accidents, address, images: []
         }
 
         steps.map(entry =>{
@@ -231,6 +258,14 @@ export class CreateListing extends React.Component{
         return mainState
         })
     }
+    
+  salerInfo = (props)=>{
+    return(<Card style={{marginHorizontal: 7}}>
+      <Card.Content>
+
+      </Card.Content>
+    </Card>)
+  }
 
     listingEntryTemplate = (props)=>{
         return(<Card style={{marginHorizontal: 7}}>
@@ -239,14 +274,30 @@ export class CreateListing extends React.Component{
           </Card.Content>
           <Card.Content style={{marginTop: 15}}>
             <View style={styles.formgroup}>
-              <Text style={styles.formtitle}>Name </Text>
+              <Text style={styles.formtitle}>Full Name</Text>
+              <TextInput placeholder="Enter full name" onChangeText={(v)=>this.setState({fullname:v})} style={styles.input}/>
+            </View>
+            <View style={styles.formgroup}>
+              <Text style={styles.formtitle}>Email</Text>
+              <TextInput placeholder="Enter email" onChangeText={(v)=>this.setState({email:v})} style={styles.input}/>
+            </View>
+            <View style={styles.formgroup}>
+              <Text style={styles.formtitle}>Phone number</Text>
+              <TextInput placeholder="Enter phone #" onChangeText={(v)=>this.setState({phone:v})} style={styles.input}/>
+            </View>
+            <View style={styles.formgroup}>
+              <Text style={styles.formtitle}>Address</Text>
+              <TextInput placeholder="Enter address" onChangeText={(v)=>this.setState({address:v})} style={styles.input}/>
+            </View>
+            <View style={styles.formgroup}>
+              <Text style={styles.formtitle}>Vehicle name</Text>
               <TextInput placeholder="Enter name" onChangeText={(v)=>this.setState({name:v})} style={styles.input}/>
             </View>
             <View style={styles.formgroup}>
               <Text style={styles.formtitle}>Description </Text>
               <Textarea
                 style={styles.input}
-                onChangeText={(v)=>this.state({description:v})}
+                onChangeText={(v)=>this.setState({description:v})}
                 defaultValue={this.state.description}
                 maxLength={500}
                 placeholder={'Enter Description'}
@@ -264,7 +315,7 @@ export class CreateListing extends React.Component{
             </View>
             <View style={styles.formgroup}>
               <Text style={styles.formtitle}>Year</Text>
-              <TextInput placeholder="Enter Model" onChangeText={(v)=>{this.setState({year_of_vehicle:v})}} style={styles.input}/>
+              <TextInput placeholder="Enter Year" onChangeText={(v)=>{this.setState({year_of_vehicle:v})}} style={styles.input}/>
             </View>
             <View style={styles.formgroup}>
               <Text style={styles.formtitle}>Trim</Text>
@@ -276,13 +327,19 @@ export class CreateListing extends React.Component{
             </View>
             <View style={styles.formgroup}>
               <Text style={styles.formtitle}>Vin Number</Text>
-              <TextInput placeholder="Enter Model" onChangeText={(v)=>{this.setState({vin_number:v})}} style={styles.input}/>
+              {this.state.vin_number &&(
+              <TextInput placeholder="Enter Vin number" value={this.state.vin_number} onChangeText={(v)=>{this.setState({vin_number:v})}} style={styles.input}/>
+              )}
+              {!this.state.vin_number &&(
+              <TextInput placeholder="Enter Vin number" value={this.state.vin_number} onChangeText={(v)=>{this.setState({vin_number:v})}} style={styles.input}/>
+              )}
+              <Icon name="qrcode" onPress={()=>{this.setState({qrcode: true})}} style={{fontSize:30,position:"absolute", right: 0, bottom: 0}}/>
             </View>
             <View style={styles.formgroup}>
               <Text style={styles.formtitle}>Disclaimers</Text>
               <Textarea
                 style={styles.input}
-                onChangeText={(v)=>this.state({disclaimers:v})}
+                onChangeText={(v)=>this.setState({disclaimers:v})}
                 defaultValue={this.state.disclaimers}
                 maxLength={500}
                 placeholder={'Enter Description'}
@@ -294,7 +351,7 @@ export class CreateListing extends React.Component{
               <Text style={styles.formtitle}>Accident</Text>
               <Textarea
                 style={styles.input}
-                onChangeText={(v)=>this.state({accidents:v})}
+                onChangeText={(v)=>this.setState({accidents:v})}
                 defaultValue={this.state.accidents}
                 maxLength={500}
                 placeholder={'Enter Accident'}
@@ -412,98 +469,140 @@ export class CreateListing extends React.Component{
           </>
         );
         return(<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex:1}}>
-          <ScrollView style={{borderTopColor: '#f7601b', borderTopWidth: 3}}>
-              <View style={{paddingHorizontal: 19, paddingVertical: 10, marginBottom: 17, backgroundColor: '#ddd'}}>
-                <ImageGallery
-                    close={() => this.setState({ viewGallery: false })}
-                    isOpen={this.state.viewGallery}
-                    images={images}/>
-                  <Pressable style={styles.debugbtn} onPress={()=>console.log(this.state)}>
-                      <Text style={{color: '#ddd', textAlign: 'center', fontSize: 17}}>Debug Log</Text>
-                  </Pressable>
-                  <Text style={{ fontSize: 18, fontWeight: "bold", color: '#111' }}>
-                      In order to validate your entry, we require you to at least submit
-                      the required information of each category.{" "}
-                  </Text>
-              </View>
-              <StepIndicator
-                  customStyles={customStyles}
-                  stepCount={8}
-                  currentPosition={this.state.step}
-              />
-              
-              <Text style={{textAlign:'center', color: '#555', fontWeight:'bold', fontSize:18, marginVertical: 10}} >{steps[this.state.step].title}</Text>
-              {steps.map((entry, index) => {
-                  if (entry.type == "images" && index == this.state.step) {
-                    return (
-                      <this.cardViewTemplate
-                        state={entry.name}
-                        images={this.state[`${entry.name}`]}
-                      ></this.cardViewTemplate>
-                    );
-                  }else if(index == this.state.step && entry.type === "information"){
-                    console.log('what')
-                    return (<this.listingEntryTemplate/>)
-                  }
-              })}
-              {this.state.step < steps.length && steps[this.state.step].type == 'images' &&(
-                <View style={[styles.row]}>
-                  <Pressable style={[styles.addimage,styles.btn]} onPress={()=> this.launchImagePicker(steps[this.state.step])}>
-                    <Text style={styles.textCenter}>Add Image(s)</Text>
-                  </Pressable>
-                  <Pressable style={[styles.addimage,styles.btn]} onPress={()=> this.launchCamera(steps[this.state.step])}>
-                    <Text style={styles.textCenter}>Take a picture</Text>
-                  </Pressable>
+          {this.state.qrcode == false &&(<>
+            <View style={[styles.outerview,{justifyContent: 'center'}]}>
+                <Text style={{alignSelf: 'center', fontWeight: 'bold', color: '#ddd', fontSize: 25, marginLeft: 20}}>
+                  Create new listing
+                </Text>
+            </View>
+            <ScrollView>
+                <View style={{paddingHorizontal: 19, paddingVertical: 10, marginBottom: 17, backgroundColor: '#ddd'}}>
+                  <ImageGallery
+                      close={() => this.setState({ viewGallery: false })}
+                      isOpen={this.state.viewGallery}
+                      images={images}/>
+                    <Pressable style={styles.debugbtn} onPress={()=>console.log(this.state)}>
+                        <Text style={{color: '#ddd', textAlign: 'center', fontSize: 17}}>Debug Log</Text>
+                    </Pressable>
+                    <Text style={{ fontSize: 18, fontWeight: "bold", color: '#111' }}>
+                        In order to validate your entry, we require you to at least submit
+                        the required information of each category.{" "}
+                    </Text>
                 </View>
-              )}
-              <View style={[styles.row,styles.mb50]}>
-                <Pressable style={styles.next} disabled={this.state.step == 0} onPress={()=>{
-                  console.log("example clicking previus")
-                  if(this.state.step >= 0){
-                    console.log("exampel eeee"+this.state.step)
-                    this.setState((state)=>{
-                      state.step = state.step -1;
-                      return state;
-                    })
-                  }
-                }}>
-                  <Text style={styles.textNext}><Icon style={{fontSize: 17}} name="arrow-left"/> Back</Text>
-                </Pressable>
-                {this.state.step < 7 &&(
-                  <Pressable style={styles.next} onPress={()=>{
-                    console.log("example clicking next")
-                    if(this.state.step < 7){
-                      console.log("exampel eeee"+this.state.step)
+                <StepIndicator
+                    customStyles={customStyles}
+                    stepCount={8}
+                    currentPosition={this.state.step}
+                />
+                
+                <Text style={{textAlign:'center', color: '#555', fontWeight:'bold', fontSize:18, marginVertical: 10}} >{steps[this.state.step].title}</Text>
+                {steps.map((entry, index) => {
+                    if (entry.type == "images" && index == this.state.step) {
+                      return (
+                        <this.cardViewTemplate
+                          state={entry.name}
+                          images={this.state[`${entry.name}`]}
+                        ></this.cardViewTemplate>
+                      );
+                    }else if(index == this.state.step && entry.type === "information"){
+                      return (<this.listingEntryTemplate/>)
+                    }else if(index == this.state.step && entry.type === "summary"){
+                      return (<this.salerInfo/>)
+                    }
+                })}
+                {this.state.step < steps.length && steps[this.state.step].type == 'images' &&(
+                  <View style={[styles.row]}>
+                    <Pressable style={[styles.addimage,styles.btn]} onPress={()=> this.launchImagePicker(steps[this.state.step])}>
+                      <Text style={styles.textCenter}>Add Image(s)</Text>
+                    </Pressable>
+                    <Pressable style={[styles.addimage,styles.btn]} onPress={()=> this.launchCamera(steps[this.state.step])}>
+                      <Text style={styles.textCenter}>Take a picture</Text>
+                    </Pressable>
+                  </View>
+                )}
+                <View style={[styles.row,styles.mb50]}>
+                  <Pressable style={styles.next} disabled={this.state.step == 0} onPress={()=>{
+                    if(this.state.step >= 0){
+                      console.log("exampel eeee"+this.state.vin_number)
                       this.setState((state)=>{
-                        state.step = state.step +1;
+                        state.step = state.step -1;
                         return state;
                       })
                     }
                   }}>
-                    <Text style={styles.textNext}>Next <Icon style={{fontSize: 17}} name="arrow-right"/></Text>
+                    <Text style={styles.textNext}><Icon style={{fontSize: 17}} name="arrow-left"/> Back</Text>
                   </Pressable>
-                )}
-                {this.state.step > 6 &&(
-                  <Pressable style={styles.btn} onPress={()=>{
-                    Alert.alert('Ready to Submit', 'Ready to submit data?', [
-                      {
-                        text: 'Cancel',
-                        onPress: () => console.log('Cancel Pressed'),
-                        style: 'cancel',
-                      },
-                      {text: 'OK', onPress: () => this.submitData()},
-                    ]);
-                  }}>
-                    <Text style={styles.textNext}>Submit</Text>
-                  </Pressable>
-                )}
-                <Modal transparent popup visible={this.state.isSubmittingData} closable={false}>
-                  <View style={styles.modalForm}>
-                    <Text><ActivityIndicator/> Submitting Data</Text>
-                  </View>
-                </Modal>
+                  {this.state.step < 7 &&(
+                    <Pressable style={styles.next} onPress={()=>{
+                      console.log("example clicking next")
+                      if(this.state.step < 7){
+                        console.log("exampel eeee"+this.state.vin_number)
+                        this.setState((state)=>{
+                          state.step = state.step +1;
+                          return state;
+                        })
+                      }
+                    }}>
+                      <Text style={styles.textNext}>Next <Icon style={{fontSize: 17}} name="arrow-right"/></Text>
+                    </Pressable>
+                  )}
+                  {this.state.step > 6 &&(
+                    <Pressable style={styles.btn} onPress={()=>{
+                      Alert.alert('Ready to Submit', 'Ready to submit data?', [
+                        {
+                          text: 'Cancel',
+                          onPress: () => console.log('Cancel Pressed'),
+                          style: 'cancel',
+                        },
+                        {text: 'OK', onPress: () => this.submitData()},
+                      ]);
+                    }}>
+                      <Text style={styles.textNext}>Submit</Text>
+                    </Pressable>
+                  )}
+                  <Modal transparent popup visible={this.state.isSubmittingData} closable={false}>
+                    <View style={styles.modalForm}>
+                      <Text><ActivityIndicator/> Submitting Data</Text>
+                    </View>
+                  </Modal>
+                </View>
+            </ScrollView>
+            </>)}
+          {this.state.qrcode == true &&(
+            <View style={{flex:1}}>
+            <View style={styles.outerview}>
+              <View
+                style={{
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  marginLeft: 10,
+                }}>
+                <Icon
+                  name="caret-left"
+                  style={{alignSelf: 'center',color: '#f7601b', fontSize: 29}}
+                  onPress={() => this.setState({qrcode:false})}
+                />
+                </View>
+              <View style={[styles.intitle,{flex: 1, justifyContent: 'center'}]}>
+                <Text style={{alignSelf: 'center', fontWeight: 'bold', color: '#ddd', fontSize: 25, marginLeft: 20}}>
+                  Create new listing
+                </Text>
               </View>
-          </ScrollView>
+            </View>
+            <BarCodeScanner
+                onBarCodeScanned={(data)=>{this.props.scanned ? undefined : this.handleBarCodeScanned(data)}}
+                style={StyleSheet.absoluteFillObject}
+            />
+            <View style={{position: 'absolute', height: '100%',width: '100%', justifyContent: 'center'}}>
+                <Image source={frame} style={{height: 470, width: 470, alignSelf: 'center'}}/>
+            </View>
+            {this.props.hasPermission == false &&(
+                <Text>No access to camera</Text>
+            )}
+            {this.props.scanned && <Button title={'Tap to Scan Again'} onPress={() => this.setState({setScanned:false})} />}
+        </View>
+          )}
         </KeyboardAvoidingView>)
     }
 }
@@ -590,6 +689,27 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.29,
       shadowRadius: 4.65,
       elevation: 7,
+  },
+  intitle:{
+    alignSelf: 'center',
+    flexDirection: 'row',
+    elevation: 5,
+  },
+  outerview:{
+    backgroundColor: '#000',
+    borderWidth: 3,
+    borderBottomColor: '#f7601b',
+    height: 56,
+    flexDirection: 'row',
+    shadowColor: '#000',
+    zIndex: 100,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   image: {
       width: ITEM_WIDTH,
