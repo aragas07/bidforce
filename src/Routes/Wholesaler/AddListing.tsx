@@ -1,5 +1,5 @@
 
-import React, { Ref } from "react";
+import React, { Ref, useState } from "react";
 import { StretchyScrollView } from "react-native-stretchy";
 import {
   View,
@@ -18,9 +18,11 @@ import {
 } from "react-native";
 import {Card} from 'react-native-paper'
 import { Camera, CameraType } from "expo-camera";
+import { Link } from '@react-navigation/native';
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import * as ImagePicker from "expo-image-picker"; // not react-image-picker
 import { ImageGallery } from "@georstat/react-native-image-gallery";
+import { BarCodeScanner } from 'expo-barcode-scanner';
 import Carousel, {Pagination} from 'react-native-snap-carousel'
 import { postListing, statecleanup_listing } from "../../stores/modules/listing";
 import { connect } from "react-redux";
@@ -29,6 +31,8 @@ import Textarea from 'react-native-textarea';
 import Modal from "react-native-modal";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import frame from '../../assets/scanner_frame.png'
+import QRCode from 'react-native-qrcode-svg'
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 export const SLIDER_WIDTH = Dimensions.get('window').width
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH )
 var permission;
@@ -49,6 +53,7 @@ const steps = [
   { title: 'Vehicle Information', name: "vehicle_information", type: "information" },
   { title: 'Summary', name: "summary", type: "summary" },
 ];
+
 
 export class CreateListing extends React.Component{
     camera: Ref<Camera>;
@@ -82,9 +87,11 @@ export class CreateListing extends React.Component{
         email: '',
         phone: '',
         address: '',
+        screenCapture: '',
       };
         this.camera = React.createRef();
     }
+
 
     componentDidMount() {
         this.setState({ loaded: true, vin_number: this.props.route.params });
@@ -134,14 +141,14 @@ export class CreateListing extends React.Component{
         this.setState({setHasPermission:status==='granted'})
       }
       getBarCodeScannerPermissions();
-  }
+    }
 
-  handleBarCodeScanned({type,data}){
-      this.setState({setScanned:true, vin_number:data, qrcode:false})
-      console.log(data+" sample scanning")
-      // this.props.navigation.navigate('addlisting', {data})
-      // Alert.alert('Bar code with type '+type, 'Data'+data+' has been scanned!')
-  }
+    handleBarCodeScanned({type,data}){
+        this.setState({setScanned:true, vin_number:data, qrcode:false})
+        console.log(data+" sample scanning")
+        // this.props.navigation.navigate('addlisting', {data})
+        // Alert.alert('Bar code with type '+type, 'Data'+data+' has been scanned!')
+    }
 
     afterchangeCallback(index) {
         console.log(index);
@@ -239,7 +246,7 @@ export class CreateListing extends React.Component{
         }
         })
 
-        // this.setState({isSubmittingData:true})
+        this.setState({isSubmittingData:true})
         this.props.postListing(data)
     }
 
@@ -259,10 +266,53 @@ export class CreateListing extends React.Component{
         })
     }
     
+  handleScreenCapture = screenCapture => {
+    this.setState({screenCapture});
+  };
+  
+  handleSave = () => {
+    const screenCaptureSource = this.state.screenCapture;
+    const downloadLink = document.createElement('a');
+    const fileName = 'react-screen-capture.png';
+
+    downloadLink.href = screenCaptureSource;
+    downloadLink.download = fileName;
+    downloadLink.click();
+  };
+
   salerInfo = (props)=>{
+    const { screenCapture } = this.state;
+    
+    var date = new Date().getDate();
+    var month = new Date().getMonth() + 1;
+    var year = new Date().getFullYear();
     return(<Card style={{marginHorizontal: 7}}>
       <Card.Content>
-
+      {/* <ScreenCapture onEndCapture={this.handleScreenCapture}>
+        {({ onStartCapture }) => (
+          <View>
+            <TouchableOpacity style={styles.button} onPress={()=> onStartCapture}><Text style={styles.save}>Capture</Text></TouchableOpacity>
+            <View style={{alignItems: 'center', justifyContent:'center', width: '100%', paddingVertical: 10}}>
+              <QRCode
+                value={this.state.vin_number}
+                size={250}
+                getRef={(ref?) => (this.productQRref = ref)}
+              />
+            </View>
+          </View>
+        )}
+      </ScreenCapture> */}
+        {/* <TouchableOpacity onPress={()=> this.shareQR()} style={styles.button}><Text style={styles.save}>Save to Gallery</Text></TouchableOpacity> */}
+        <View style={{alignItems: 'center', justifyContent:'center', width: '100%', paddingVertical: 10}}>
+          <QRCode
+            value={this.state.vin_number}
+            size={250}
+            getRef={(ref?) => (this.productQRref = ref)}
+          />
+        </View>
+        <Text style={styles.sname}>VIN : <Text style={styles.uname}>{this.state.vin_number}</Text></Text>
+        <Text style={styles.sname}>Vehicle name : <Text style={styles.uname}>{this.state.name}</Text></Text>
+        <Text style={styles.sname}>Date created : <Text style={styles.uname}>{date + '-' + month + '-' + year}</Text></Text>
       </Card.Content>
     </Card>)
   }
@@ -326,7 +376,7 @@ export class CreateListing extends React.Component{
               <TextInput placeholder="Enter Mileage" onChangeText={(v)=>{this.setState({mileage:v})}} style={styles.input}/>
             </View>
             <View style={styles.formgroup}>
-              <Text style={styles.formtitle}>Vin Number</Text>
+              <Text style={styles.formtitle}>VIN</Text>
               {this.state.vin_number &&(
               <TextInput placeholder="Enter Vin number" value={this.state.vin_number} onChangeText={(v)=>{this.setState({vin_number:v})}} style={styles.input}/>
               )}
@@ -659,11 +709,19 @@ const styles = StyleSheet.create({
       padding: 5,
       borderRadius: 4
   },
+  sname:{
+    fontSize: 17,
+    paddingVertical: 7
+  },
   input: {
       flex: 1,
       padding: 5,
       borderBottomColor: '#ccc',
       borderBottomWidth: 1
+  },
+  uname:{
+    fontWeight: "bold",
+    color: '#555'
   },
   mb50:{
     marginBottom: 50
@@ -714,6 +772,25 @@ const styles = StyleSheet.create({
   image: {
       width: ITEM_WIDTH,
       height: 300,
+  },
+  button: {
+    borderRadius:30,
+    padding:10,
+    position: 'relative',
+    bottom: 0,
+    width: '70%',
+    marginBottom: 10,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontWeight: 'bold',
+    color: '#fff',
+    backgroundColor:"#273746"
+  },
+  save: {
+    color: '#fff',
+    fontSize:16,
+    textTransform: 'capitalize'
   }
 });
 

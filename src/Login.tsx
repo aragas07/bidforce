@@ -25,11 +25,6 @@ export class Login extends React.Component{
 
   componentDidUpdate(props, props2){
     let { auth } = this.props
-    console.log('prop update')
-    console.log(props)
-    console.log('propaa2')
-    console.log(props2)
-
     if(props!=this.props){
       if(auth.loginSuccess){
         this.setState({loggingIn:false, error:null})
@@ -72,7 +67,7 @@ export class Login extends React.Component{
                 <Pressable style={styles.button} onPress={()=>this.login()}>
                   <Text style={styles.buttonText}>Login</Text>
                 </Pressable>
-                <Text style={styles.legend}>Don't have an account? <Text onPress={()=>navigation.navigate('createUser')} style={styles.bluetext}>Create a new account</Text></Text>
+                <Text style={styles.legend}>Don't have an account? <Text onPress={()=>this.props.navigation.navigate('createUser')} style={styles.bluetext}>Create a new account</Text></Text>
               </View>
             </View>
           </View>
@@ -163,7 +158,7 @@ const styles = StyleSheet.create({
     width: '40%',
     marginBottom: 10
   },
-  logoimg: { 
+  logoimg: {
     aspectRatio: 0.7,
     resizeMode: 'contain',
     height: 500,

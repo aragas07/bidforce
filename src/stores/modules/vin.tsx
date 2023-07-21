@@ -2,9 +2,9 @@ import objectAssign from 'object-assign';
 // import {API_URL} from '@env';
 import axios from 'axios';
 import ToastNice from 'react-native-toast-message';
-// const API_URL = 'http://165.22.48.133:3333';
+const API_URL = 'http://165.22.48.133:3333';
 
-const API_URL = 'http://192.168.254.106:3333'
+// const API_URL = 'http://192.168.254.113:3333'
 export const GET_VIN_SUCCESS = 'vin/GET_VIN_SUCCESS';
 export const GET_VIN_ERROR = 'vin/GET_VIN_ERROR';
 

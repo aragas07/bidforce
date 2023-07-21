@@ -22,7 +22,7 @@ export class Home extends React.Component{
     console.log(props)
 
     if (auth.logoutSuccess) {
-      this.props.navigation.replace('login');
+    this.props.navigation.replace('login');
     }
   }
 

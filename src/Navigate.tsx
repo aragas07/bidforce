@@ -215,5 +215,4 @@ export class Navigate extends React.Component {
   }
 }
 
-
 export default connect(mapStateToProps, mapActionCreators)(Navigate);

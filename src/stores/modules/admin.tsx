@@ -2,8 +2,8 @@ import objectAssign from 'object-assign';
 // import {API_URL} from '@env';
 import axios from 'axios';
 import ToastNice from 'react-native-toast-message';
-// const API_URL = 'http://165.22.48.133:3333';
-const API_URL = 'http://192.168.254.106:3333'
+const API_URL = 'http://165.22.48.133:3333';
+// const API_URL = 'http://192.168.254.113:3333'
 export const CREATE_USER_SUCCESS = 'admin/CREATE_USER_SUCCESS';
 export const CREATE_USER_ERROR = 'admin/CREATE_USER_ERROR';
 export const CREATE_USER_FAIL = 'admin/CREATE_USER_FAIL';

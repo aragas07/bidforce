@@ -4,10 +4,13 @@ import axios from 'axios';
 import ToastNice from 'react-native-toast-message';
 const { v4: uuidv4, validate } = require("uuid");
 const Buffer = require("buffer").Buffer;
-// const API_URL = 'http://165.22.48.133:3333';
-const API_URL = 'http://192.168.254.106:3333'
+const API_URL = 'http://165.22.48.133:3333';
+// const API_URL = 'http://192.168.254.113:3333'
 export const LOGIN_SUCCESS = 'auth/LOGIN_SUCCESS';
 export const LOGIN_ERROR = 'auth/LOGIN_ERROR';
+export const REGISTER_SUCCESS = 'auth/REGISTER_SUCCESS';
+export const REGISTER_ERROR = 'auth/REGISTER_ERROR';
+export const REGISTER_FAIL = 'auth/REGISTER_ERROR';
 export const LOGIN_FAIL = 'auth/LOGIN_FAIL';
 
 export const GET_NOTIFICATIONS_SUCCESS = 'auth/GET_NOTIFICATIONS_SUCCESS';
@@ -245,13 +248,40 @@ export function logout() {
   };
 }
 
+export function register(data){
+  console.log(":: register ::")
+  console.log(data)
+  return (dispatch, getState)=>{
+    let hostname = API_URL
+    axios.post(`${hostname}/register`, data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then((resuults)=>{
+      if (data.type == 'signup') {
+        resuults.type = 'signup';
+      }
+      dispatch({
+        type: REGISTER_SUCCESS,
+        payload: resuults,
+      });
+    }).catch((error)=>{
+      ToastNice.show({text1: "Error has occured", text2: error.message ? error.message : error.response.toString(), type: 'error'})
+      dispatch({
+        type: REGISTER_ERROR,
+        payload: error.response ? error.response.data : error,
+      })
+    })
+  }
+}
+
 export const actions = {
   getUserById,
   login,
   logout,
   getMyBids,
   getNotifications,
-  
+  register,
 };
 
 const actionHandlers = {};
@@ -306,6 +336,13 @@ actionHandlers[GET_MY_BIDS_ERROR] = (state, action) => {
   return newState;
 };
 
+actionHandlers[REGISTER_SUCCESS] = (state, action)=>{
+  let newState;
+  newState = objectAssign({}, state);
+  newState.registerSuccess = true;
+  newState.registerError = false;
+  return newState;
+}
 
 actionHandlers[GET_NOTIFICATIONS_SUCCESS] = (state, action) => {
   let newState;
@@ -363,6 +400,14 @@ actionHandlers[LOGIN_ERROR] = (state, action) => {
   return newState;
 };
 
+actionHandlers[REGISTER_ERROR] = (state, action)=>{
+  let newState;
+  newState = objectAssign({}, state);
+  newState.registerSuccess = false;
+  newState.registerError = true;
+  return newState;
+}
+
 actionHandlers[CHECK_ME_SUCCESS] = (state, action) => {
   console.log('User token check');
   let newState;
@@ -413,7 +458,8 @@ const initialState = {
   loginError: false,
   loginSuccess: false,
   loginData: null,
-  
+  registerSuccess: false,
+  registerError: false,
   accessToken: null,
   
   tokenSuccess: false,

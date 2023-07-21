@@ -2,8 +2,8 @@ import objectAssign from 'object-assign';
 // import {API_URL} from '@env';
 import axios from 'axios';
 import ToastNice from 'react-native-toast-message';
-// const API_URL = 'http://165.22.48.133:3333';
-const API_URL = 'http://192.168.254.106:3333'
+const API_URL = 'http://165.22.48.133:3333';
+// const API_URL = 'http://192.168.254.113:3333'
 export const GET_LISTING_SUCCESS = 'listing/GET_LISTING_SUCCESS';
 export const GET_LISTING_ERROR = 'listing/GET_LISTING_ERROR';
 export const GET_LISTING_FAIL = 'listing/GET_LISTING_FAIL';
